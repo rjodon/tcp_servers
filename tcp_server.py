@@ -1,6 +1,6 @@
+# Example of a multiprocessing server - No that efficient as servers are I/O bonded
 import multiprocessing as mp
 import socket
-
 
 
 def handle(connection, address, queue):
@@ -10,7 +10,7 @@ def handle(connection, address, queue):
         msg = data.decode()
         print("{} says: {}".format(address, msg))
         queue.put_nowait(msg)
-    except:
+    except BaseException:
         print("Problem handling request")
     finally:
         print("Closing socket")
@@ -34,13 +34,14 @@ class Server:
             process.daemon = True
             process.start()
 
+
 if __name__ == "__main__":
     msgs = mp.Queue()
     server = Server("0.0.0.0", 2222, msgs)
     try:
         print("Listening")
         server.start()
-    except:
+    except KeyboardInterrupt:
         print("Unexpected exception")
     finally:
         print("Shutting down")
